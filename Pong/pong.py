@@ -13,32 +13,35 @@ running = True
 black = 0, 0, 0
 
 """ Class: Ball
-    Functions: update """
+    Returns: Ball object
+    Functions: update, draw """
 class Ball:
     
     def __init__(self): 
         
         """ Ball initialization """
-        self.ball = pygame.image.load("data/ball.png") #load our ball image
-        self.ball_rect = self.ball.get_rect(center=(320,15)) #set the ball rectangle position to be at (320, 15)
+        self.ball = pygame.image.load("data/ball.png")
+        self.ball_rect = self.ball.get_rect(center=(320,15))
       
     def update(self):
         
         #Check for updates in the ball's position, and handle them accordingly
-        self.ball_rect = self.ball_rect.move(speed) #change the position of the ball
+        self.ball_rect = self.ball_rect.move(speed)
         if self.ball_rect.right > width or self.ball_rect.left < 0:
             speed[0] = -speed[0]
         if self.ball_rect.top > height or self.ball_rect.bottom < 0:
             speed[1] = -speed[1]
+        pygame.event.pump()
 
         
     def draw(self, screen, background):
         
         #Draw the updates we've just made to Ball
-        screen.blit(self.ball, self.ball_rect) #draw the image of the ball onto our ball_rect
+        screen.blit(self.ball, self.ball_rect)
         
 """ Class: Bat
-    Functions:  """
+    Returns: Bat object
+    Functions: draw, move_up, move_down  """
 class Bat:
     
     def __init__(self):
@@ -47,37 +50,39 @@ class Bat:
         self.position = [20,150]
         self.bat = pygame.image.load("data/bat.png")
         self.bat_rect = self.bat.get_rect()
-        self.bat_rect = self.bat_rect.move(self.position) #set the ball rectangle position to be at (320, 15)
+        self.bat_rect = self.bat_rect.move(self.position)
+        self.state = "still"
         
         
-    def watchActivity(self, event):
-        
-        #get the collection of keys pressed
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
-            print("Big pooper!")
-            self.position[1] = self.position[1] - 1
-            self.bat_rect.move(self.position)
-        #if event.key == pygame.KEYUP:
-         #   print("Little pooper!")
-          #  self.position[1] = self.position[1] + 1
-           # self.bat_rect.move(self.position)
+    def update(self):
+        pygame.event.pump()
+        print("In Watch Activity")
         
     def draw(self, screen, background):
                 
         #Draw what updates we've made to the screen
         screen.blit(self.bat, self.bat_rect)
+        
+    def move_up(self):
+        self.state = "moving up!"
+        self.bat_rect.y = self.bat_rect.y - 10
+        
+    def move_down(self):
+        self.state = "moving down!"
+        self.bat_rect.y = self.bat_rect.y + 10
 
-""" Class: Play
-    Functions: Play """
+""" Class: Pong
+    Returns: Pong object
+    Functions: play """
 class Pong():
     
     def __init__(self):
         
         print("Pong initiated!")
     
-    def Play(self):
+    def play(self):
             
-        pygame.init() #initialize all modules from pygame
+        pygame.init()
         pygame.display.set_caption("Pong Clone")
     
         """ Initialize the screen """
@@ -88,29 +93,35 @@ class Pong():
         background = background.convert()
     
         ball = Ball()
-        player1 = Bat()
+        player = Bat()
     
         while running:
+            
             #print("Cursor position:", pygame.mouse.get_pos())
-        
             for event in pygame.event.get():
-                player1.watchActivity(event)
                 if event.type == pygame.QUIT:
                     sys.exit()
-            
-            #screen.fill(black)   
+                elif event.type == pygame.KEYUP:
+                    player.state = "still"
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_UP:
+                        player.move_up()
+                    if event.key == pygame.K_DOWN:
+                        player.move_down()
+               
             ball.update()
+            player.update()
             
             screen.blit(background, (0,0))
             
             ball.draw(screen, background)
-            player1.draw(screen,background)
+            player.draw(screen,background)
             
             pygame.display.update()
         
 def main():
     Game = Pong()
-    Game.Play()
+    Game.play()
     
 if __name__ == '__main__': main()
     #pass
