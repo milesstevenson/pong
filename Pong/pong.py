@@ -54,9 +54,9 @@ class Bat:
         self.state = "still"
         
         
-    def update(self):
+    def update(self, pressed):
         pygame.event.pump()
-        print("In Watch Activity")
+        #print("In Watch Activity")
         
     def draw(self, screen, background):
                 
@@ -64,12 +64,13 @@ class Bat:
         screen.blit(self.bat, self.bat_rect)
         
     def move_up(self):
-        self.state = "moving up!"
-        self.bat_rect.y = self.bat_rect.y - 10
+        #self.state = "moveup"
+        if self.bat_rect.y > 0:
+            self.bat_rect.y = self.bat_rect.y - 1
         
     def move_down(self):
-        self.state = "moving down!"
-        self.bat_rect.y = self.bat_rect.y + 10
+        if self.bat_rect.y < (height - self.bat_rect.height):
+            self.bat_rect.y = self.bat_rect.y + 1
 
 """ Class: Pong
     Returns: Pong object
@@ -97,20 +98,31 @@ class Pong():
     
         while running:
             
-            #print("Cursor position:", pygame.mouse.get_pos())
+            print("Cursor position:", pygame.mouse.get_pos())
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit()
+                    
+                """ BAD, BAD, NOT GOOD!!
+                    BAD, BAD!
+                    BAD!
                 elif event.type == pygame.KEYUP:
                     player.state = "still"
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_UP:
                         player.move_up()
                     if event.key == pygame.K_DOWN:
-                        player.move_down()
-               
+                        player.move_down()"""
+            pressed = pygame.key.get_pressed()
+            if pressed[pygame.K_UP]:
+                player.move_up()
+            if pressed[pygame.K_DOWN]:
+                player.move_down()
+            else:
+                player.state = "still"
+                
             ball.update()
-            player.update()
+            player.update(pressed)
             
             screen.blit(background, (0,0))
             
