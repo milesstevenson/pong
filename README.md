@@ -9,10 +9,10 @@ This is a clone of the game, Pong, to get familiar with Python and Pygame.
 
 ## Current Features ##
 * Bouncing ball sprite across the screen
-* Visible first bat, with some user movement taken
+* User movement through the bat sprite
 
 ## Still To Be Done ##
-* User movement through the bat sprite
+* ~~User movement through the bat sprite~~
 * Proper collision handling between the bat and ball sprites
 * Point system and proper updates to said system once a ball passes the opponent
 * Simple AI for the opposing bat
