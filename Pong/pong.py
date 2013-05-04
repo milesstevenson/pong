@@ -3,8 +3,54 @@ Created on Mar 23, 2013
 @author: Miles Stevenson
 Released under the GNU General Public License
 '''
-import pygame, sys, random
+import pygame, sys, random, time
 
+
+""" Global Functions: reset_score, update_ai_score, update_player_score, draw_line
+                    draw_ai_score, draw_player_score
+                    
+    The following functions are global, because I'm unsure how to use them in a more
+    OOP manner for now. """
+    
+def load_sound(name): 
+    sound = pygame.mixer.Sound(name)
+    return sound
+    
+def reset_scores():
+    global ai_count
+    global player_count
+    
+    player_count = 0
+    ai_count = 0
+    screen.blit(player_scores[player_count], player_score)
+    screen.blit(player_scores[ai_count], ai_score)      
+
+def update_ai_score():
+    global ai_count
+    if ai_count < 9:
+        ai_count = ai_count + 1
+        ai_score = score_rects[ai_count]
+    else:
+        time.sleep(2)
+        reset_scores()
+    
+def update_player_score():
+    global player_count
+    if player_count < 9:
+        player_count = player_count + 1
+        player_score = score_rects[player_count]
+    else:
+        time.sleep(2)
+        reset_scores()
+        
+def draw_line():
+    screen.blit(split, split_rect) 
+
+def draw_ai_score():
+    screen.blit(player_scores[ai_count], ai_score)
+        
+def draw_player_score():   
+    screen.blit(player_scores[player_count], player_score)
 
 """ Global Variables """
 size = width, height = 800, 400
@@ -30,41 +76,11 @@ ai_count = 0
 player_score = score_rects[0].move((width/4), 10)
 ai_score = score_rects[0].move(width - (width/4), 10)
 
-""" Global Functions: reset_score, update_ai_score, update_player_score, draw_line
-                    draw_ai_score, draw_player_score
-                    
-    The following functions are global, because I'm unsure how to use them in a more
-    OOP manner for now. """
-def reset_scores():
-    global ai_count
-    global player_count
-    
-    player_count = 0
-    ai_count = 0
-    screen.blit(player_scores[player_count], player_score)
-    screen.blit(player_scores[ai_count], ai_score)      
+pygame.mixer.init()
+bounce_paddle = load_sound("data/bounce-paddle.wav")
+bounce_wall = load_sound("data/bounce-wall.wav")
+missed_ball = load_sound("data/missed-ball.wav")    
 
-def update_ai_score():
-    global ai_count
-    
-    ai_count = ai_count + 1
-    ai_score = score_rects[ai_count]
-    
-def update_player_score():
-    global player_count
-    
-    player_count = player_count + 1
-    player_score = score_rects[player_count]
-        
-def draw_line():
-    screen.blit(split, split_rect) 
-
-def draw_ai_score():
-    screen.blit(player_scores[ai_count], ai_score)
-        
-def draw_player_score():   
-    screen.blit(player_scores[player_count], player_score)
-    
 
 """ Class: Ball
     Returns: Ball object
@@ -88,24 +104,29 @@ class Ball:
         self.ball_rect = self.ball_rect.move(speed)
         
         if self.ball_rect.right > width:
+            missed_ball.play()
             update_player_score()
+            time.sleep(.5)
             self.restart_ball()
         if self.ball_rect.left < 0:
+            missed_ball.play()
             update_ai_score()
+            time.sleep(.5)
             self.restart_ball()          
         if self.ball_rect.top > height or self.ball_rect.bottom < 0:
+            bounce_wall.play()
             speed[1] = -speed[1]
                     
         if (self.ball_rect.midleft <= self.bats[0].midright):
             if (self.collision(self.bats[0])):
+                bounce_paddle.play()
                 speed[0] = -speed[0]
                 
         if (self.ball_rect.midright >= self.bats[1].midleft):
             if (self.collision(self.bats[1])):
+                bounce_paddle.play()
                 speed[0] = -speed[0]    
-        
-        if ai_count > 9 or player_count > 9:
-            reset_scores()        
+      
         pygame.event.pump()
         
     def draw(self, screen, background):
