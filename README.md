@@ -15,6 +15,5 @@ This is a clone of the game, Pong, to get familiar with Python and Pygame.
 * Beatable AI for opposing bat
 
 ## Still To Be Done ##
-* Fix the point system to restart the game after a player gets 10 points -- currently crashes at 10 poins.
 * Possibly implement different levels of difficulty of said AI -- easy, medium, hard
-* Some sort of game menu interface
+* Possibly add some sort of game menu interface
